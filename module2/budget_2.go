@@ -3,9 +3,11 @@ package module2
 import (
 	"errors"
 	"time"
+	log "github.com/sirupsen/logrus"
 )
 
 // START Initial code
+const Environment = "dev"
 
 // Budget stores Budget information
 type Budget struct {
@@ -28,6 +30,7 @@ func InitializeReport() {
 }
 
 func init() {
+	// Create a new instance of the logger. You can have any number of instances.
 	InitializeReport()
 }
 
@@ -54,14 +57,29 @@ var errDuplicateEntry = errors.New("Cannot add duplicate entry")
 // AddItem adds an item to the current budget
 func (b *Budget) AddItem(description string, price float32) error {
 
+	newItem := Item{Description: description, Price: price}
+	log.WithFields(log.Fields{
+		"description": description,
+		"price": price,
+		"max": b.Max,
+		"current_cost": b.CurrentCost(),
+	}).Info("Adding item")
+	if b.CurrentCost() + price > b.Max {
+		return errDoesNotFitBudget
+	}
+	b.Items = append(b.Items, newItem)
 	return nil
 }
 
 // RemoveItem removes a given item from the current budget
 func (b *Budget) RemoveItem(description string) {
+	log.WithFields(log.Fields{
+		"description": description,
+	}).Info("Remove Item")
 	for i := range b.Items {
 		if b.Items[i].Description == description {
-
+			b.Items = append(b.Items[:i], b.Items[i+1:]...)
+			break
 		}
 	}
 }
@@ -70,11 +88,40 @@ func (b *Budget) RemoveItem(description string) {
 func CreateBudget(month time.Month, max float32) (*Budget, error) {
 	var newBudget *Budget
 
+	if len(report) >= 12 {
+		log.Info(len(report))
+		return nil, errReportIsFull
+	}
+
+	if _, hasEntry := report[month]; hasEntry {
+		log.Info(hasEntry)
+		return nil, errDuplicateEntry
+	}
+
+	newBudget = &Budget{
+		Max:   max,
+		Items: nil,
+	}
+
+	log.WithFields(log.Fields{
+		"new_budget_addr": &newBudget,
+		"new_budget": newBudget,
+	}).Info("Remove Item")
+
+	report[month] = newBudget
+
 	return newBudget, nil
 }
 
 // GetBudget returns budget for given month
 func GetBudget(month time.Month) *Budget {
+
+	if budget, ok := report[month]; ok != false {
+		log.WithFields(log.Fields{
+			"budget": budget,
+		}).Info("Getting budget")
+		return budget
+	}
 
 	return nil
 }
