@@ -58,12 +58,12 @@ var errDuplicateEntry = errors.New("Cannot add duplicate entry")
 func (b *Budget) AddItem(description string, price float32) error {
 
 	newItem := Item{Description: description, Price: price}
-	log.WithFields(log.Fields{
-		"description": description,
-		"price": price,
-		"max": b.Max,
-		"current_cost": b.CurrentCost(),
-	}).Info("Adding item")
+	//log.WithFields(log.Fields{
+	//	"description": description,
+	//	"price": price,
+	//	"max": b.Max,
+	//	"current_cost": b.CurrentCost(),
+	//}).Info("Adding item")
 	if b.CurrentCost() + price > b.Max {
 		return errDoesNotFitBudget
 	}
@@ -73,9 +73,9 @@ func (b *Budget) AddItem(description string, price float32) error {
 
 // RemoveItem removes a given item from the current budget
 func (b *Budget) RemoveItem(description string) {
-	log.WithFields(log.Fields{
-		"description": description,
-	}).Info("Remove Item")
+	//log.WithFields(log.Fields{
+	//	"description": description,
+	//}).Info("Remove Item")
 	for i := range b.Items {
 		if b.Items[i].Description == description {
 			b.Items = append(b.Items[:i], b.Items[i+1:]...)
@@ -94,7 +94,7 @@ func CreateBudget(month time.Month, max float32) (*Budget, error) {
 	}
 
 	if _, hasEntry := report[month]; hasEntry {
-		log.Info(hasEntry)
+		//log.Info(hasEntry)
 		return nil, errDuplicateEntry
 	}
 
@@ -103,12 +103,17 @@ func CreateBudget(month time.Month, max float32) (*Budget, error) {
 		Items: nil,
 	}
 
-	log.WithFields(log.Fields{
-		"new_budget_addr": &newBudget,
-		"new_budget": newBudget,
-	}).Info("Remove Item")
+	//log.WithFields(log.Fields{
+	//	"new_budget_addr": &newBudget,
+	//	"new_budget": newBudget,
+	//}).Info("Create Budget")
 
 	report[month] = newBudget
+	//log.WithFields(log.Fields{
+	//	"new_budget": newBudget,
+	//	"report": report,
+	//	"month_report": report[month],
+	//}).Info("Budget Added To Report")
 
 	return newBudget, nil
 }
@@ -117,9 +122,9 @@ func CreateBudget(month time.Month, max float32) (*Budget, error) {
 func GetBudget(month time.Month) *Budget {
 
 	if budget, ok := report[month]; ok != false {
-		log.WithFields(log.Fields{
-			"budget": budget,
-		}).Info("Getting budget")
+		//log.WithFields(log.Fields{
+		//	"budget": budget,
+		//}).Info("Getting budget")
 		return budget
 	}
 
