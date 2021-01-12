@@ -3,7 +3,7 @@ package module2
 import (
 	"errors"
 	"time"
-	log "github.com/sirupsen/logrus"
+	//log "github.com/sirupsen/logrus"
 )
 
 // START Initial code
