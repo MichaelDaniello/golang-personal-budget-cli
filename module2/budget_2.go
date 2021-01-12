@@ -89,7 +89,7 @@ func CreateBudget(month time.Month, max float32) (*Budget, error) {
 	var newBudget *Budget
 
 	if len(report) >= 12 {
-		log.Info(len(report))
+		//log.Info(len(report))
 		return nil, errReportIsFull
 	}
 
